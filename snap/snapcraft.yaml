@@ -1,0 +1,32 @@
+name: dekoder
+version: git
+summary: A materially designed music player
+description: |
+   Materially Designed, and written in pure kotlin but with a javaFX GUI.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+apps:
+  dekoder:
+    command: desktop-launch java -jar $SNAP/dekoder.jar
+    environment:
+      PATH: $PATH:$SNAP/usr/lib/jvm/java-8-openjdk/bin
+
+parts:
+  dekoder:
+    source: .
+    plugin: nil
+    prepare: chmod +x gradlew
+    build: ./gradlew jar
+    build-packages: [openjdk-8-jdk, openjfx]
+    stage-packages:
+      - openjdk-8-jre
+      - openjfx
+      - libgl1-mesa-dri
+      - libgl1-mesa-glx
+      - libgles2-mesa
+    install: mv build/libs/dekoder-*.jar $SNAPCRAFT_PART_INSTALL/dekoder.jar
+    organize:
+      usr/lib/jvm/java-8-openjdk-*: usr/lib/jvm/java-8-openjdk
+    after: [desktop-glib-only]
